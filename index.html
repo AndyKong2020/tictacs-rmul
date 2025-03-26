@@ -25,8 +25,8 @@
         
         .player {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 6vw; /* 从3vw增加到6vw，使贴图更大 */
+            height: 6vw; /* 从3vw增加到6vw，使贴图更大 */
             cursor: move;
             user-select: none;
             transform-origin: center center;
@@ -34,25 +34,26 @@
         
         .rotation-handle {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 1.5vw; /* 从1vw增加到1.5vw */
+            height: 1.5vw; /* 从1vw增加到1.5vw */
             background-color: rgba(255, 255, 255, 0.7);
             border: 1px solid #333;
             border-radius: 50%;
-            bottom: -10px;
-            right: -10px;
+            bottom: -0.8vw; /* 从-0.5vw调整到-0.8vw */
+            right: -0.8vw; /* 从-0.5vw调整到-0.8vw */
             cursor: pointer;
             z-index: 2;
         }
         
         .player-id {
             position: absolute;
-            top: -20px;
+            top: -1.8vw; /* 从-1.2vw调整到-1.8vw */
             width: 100%;
             text-align: center;
             color: white;
             font-weight: bold;
             text-shadow: 1px 1px 2px black;
+            font-size: 1.2vw; /* 从0.8vw增加到1.2vw */
         }
         
         .red-player {
@@ -85,6 +86,7 @@
         <button id="add-red">添加红方</button>
         <button id="add-blue">添加蓝方</button>
         <button id="reset">重置</button>
+        <button id="toggle-rotation">显示/隐藏旋转控制</button>
     </div>
 
     <script src="script.js"></script>

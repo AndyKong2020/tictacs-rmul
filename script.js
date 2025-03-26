@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addRedBtn = document.getElementById('add-red');
     const addBlueBtn = document.getElementById('add-blue');
     const resetBtn = document.getElementById('reset');
+    const toggleRotationBtn = document.getElementById('toggle-rotation');
     
     // 玩家ID配置
     const redPlayerIds = [1, 4, 7];
@@ -14,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 所有玩家元素
     const players = [];
+    
+    // 旋转控制按钮显示状态
+    let rotationHandlesVisible = true;
     
     // 添加红方玩家
     addRedBtn.addEventListener('click', function() {
@@ -42,6 +46,23 @@ document.addEventListener('DOMContentLoaded', function() {
         resetBattlefield();
     });
     
+    // 显示/隐藏旋转控制按钮
+    toggleRotationBtn.addEventListener('click', function() {
+        rotationHandlesVisible = !rotationHandlesVisible;
+        toggleRotationHandles();
+    });
+    
+    // 切换所有旋转控制按钮的显示状态
+    function toggleRotationHandles() {
+        const handles = document.querySelectorAll('.rotation-handle');
+        console.log(`找到 ${handles.length} 个旋转控制按钮`);
+        handles.forEach(handle => {
+            handle.style.display = rotationHandlesVisible ? 'block' : 'none';
+            console.log(`设置旋转控制按钮显示状态: ${handle.style.display}`);
+        });
+        console.log(`旋转控制按钮显示状态: ${rotationHandlesVisible}`);
+    }
+    
     // 创建玩家函数
     function createPlayer(team, id) {
         const player = document.createElement('div');
@@ -58,16 +79,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // 创建旋转控制按钮
         const rotationHandle = document.createElement('div');
         rotationHandle.className = 'rotation-handle';
+        rotationHandle.style.display = rotationHandlesVisible ? 'block' : 'none';
         player.appendChild(rotationHandle);
         
         // 设置初始位置（随机位置，但确保在视口内）
-        const maxX = battlefield.clientWidth - 50;
-        const maxY = battlefield.clientHeight - 50;
+        const battlefieldRect = battlefield.getBoundingClientRect();
+        const maxX = 100; // 使用百分比而不是像素
+        const maxY = 100; // 使用百分比而不是像素
         const randomX = team === 'red' ? Math.random() * (maxX / 2) : (maxX / 2) + Math.random() * (maxX / 2);
         const randomY = Math.random() * maxY;
         
-        player.style.left = `${randomX}px`;
-        player.style.top = `${randomY}px`;
+        player.style.left = `${randomX}%`;
+        player.style.top = `${randomY}%`;
         player.style.transform = 'rotate(0deg)';
         
         // 添加拖拽和旋转功能
@@ -91,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         element.ontouchstart = dragTouchStart;
         
         function dragMouseDown(e) {
-            if (e.target.className === 'rotation-handle') return; // 如果点击的是旋转控制按钮，不进行拖拽
+            if (e.target.classList.contains('rotation-handle')) return; // 如果点击的是旋转控制按钮，不进行拖拽
             e = e || window.event;
             e.preventDefault();
             // 获取鼠标初始位置
@@ -106,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function dragTouchStart(e) {
-            if (e.target.className === 'rotation-handle') return; // 如果触摸的是旋转控制按钮，不进行拖拽
+            if (e.target.classList.contains('rotation-handle')) return; // 如果触摸的是旋转控制按钮，不进行拖拽
             e.preventDefault();
             const touch = e.touches[0];
             pos3 = touch.clientX;
@@ -141,16 +164,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function updateElementPosition() {
-            // 设置元素的新位置
+            // 获取战场的尺寸
+            const battlefieldRect = battlefield.getBoundingClientRect();
+            
+            // 计算新位置（百分比）
             const newTop = (element.offsetTop - pos2);
             const newLeft = (element.offsetLeft - pos1);
             
-            // 确保不超出边界
-            const maxX = battlefield.clientWidth - element.offsetWidth;
-            const maxY = battlefield.clientHeight - element.offsetHeight;
+            // 转换为百分比
+            const topPercent = (newTop / battlefieldRect.height) * 100;
+            const leftPercent = (newLeft / battlefieldRect.width) * 100;
             
-            element.style.top = `${Math.max(0, Math.min(maxY, newTop))}px`;
-            element.style.left = `${Math.max(0, Math.min(maxX, newLeft))}px`;
+            // 确保不超出边界
+            const maxX = 100 - (element.offsetWidth / battlefieldRect.width) * 100;
+            const maxY = 100 - (element.offsetHeight / battlefieldRect.height) * 100;
+            
+            element.style.top = `${Math.max(0, Math.min(maxY, topPercent))}%`;
+            element.style.left = `${Math.max(0, Math.min(maxX, leftPercent))}%`;
         }
         
         function closeDragElement() {
