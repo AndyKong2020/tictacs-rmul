@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addBlueBtn = document.getElementById('add-blue');
     const resetBtn = document.getElementById('reset');
     const toggleRotationBtn = document.getElementById('toggle-rotation');
+    const screenshotBtn = document.getElementById('screenshot');
     
     // 玩家ID配置
     const redPlayerIds = [1, 4, 7];
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const players = [];
     
     // 旋转控制按钮显示状态
-    let rotationHandlesVisible = true;
+    let rotationHandlesVisible = false;
     
     // 添加红方玩家
     addRedBtn.addEventListener('click', function() {
@@ -52,6 +53,11 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleRotationHandles();
     });
     
+    // 截图按钮
+    screenshotBtn.addEventListener('click', function() {
+        takeScreenshot();
+    });
+    
     // 切换所有旋转控制按钮的显示状态
     function toggleRotationHandles() {
         const handles = document.querySelectorAll('.rotation-handle');
@@ -82,16 +88,19 @@ document.addEventListener('DOMContentLoaded', function() {
         rotationHandle.style.display = rotationHandlesVisible ? 'block' : 'none';
         player.appendChild(rotationHandle);
         
-        // 设置初始位置（随机位置，但确保在视口内）
+        // 设置初始位置（红色在左上角，蓝色在右下角）
         const battlefieldRect = battlefield.getBoundingClientRect();
         const maxX = 100; // 使用百分比而不是像素
         const maxY = 100; // 使用百分比而不是像素
-        const randomX = team === 'red' ? Math.random() * (maxX / 2) : (maxX / 2) + Math.random() * (maxX / 2);
-        const randomY = Math.random() * maxY;
         
-        player.style.left = `${randomX}%`;
-        player.style.top = `${randomY}%`;
-        player.style.transform = 'rotate(0deg)';
+        // 红色玩家在左上角区域，蓝色玩家在右下角区域
+        const posX = team === 'red' ? Math.random() * 10 + 10 : Math.random() * 10 + 70;
+        const posY = team === 'red' ? Math.random() * 10 + 10 : Math.random() * 10 + 70;
+        
+        player.style.left = `${posX}%`;
+        player.style.top = `${posY}%`;
+        // 红色玩家正常朝向，蓝色玩家旋转180度
+        player.style.transform = team === 'red' ? 'rotate(0deg)' : 'rotate(180deg)';
         
         // 添加拖拽和旋转功能
         makeDraggable(player);
@@ -300,4 +309,53 @@ document.addEventListener('DOMContentLoaded', function() {
         redPlayerCount = 0;
         bluePlayerCount = 0;
     }
+    
+    // 截图功能
+    function takeScreenshot() {
+        // 临时隐藏控制面板
+        const controls = document.getElementById('controls');
+        const controlsDisplay = controls.style.display;
+        controls.style.display = 'none';
+        
+        // 临时隐藏旋转控制按钮
+        const rotationHandles = document.querySelectorAll('.rotation-handle');
+        const rotationHandlesDisplays = [];
+        rotationHandles.forEach(handle => {
+            rotationHandlesDisplays.push(handle.style.display);
+            handle.style.display = 'none';
+        });
+        
+        // 使用html2canvas库将战场转换为canvas
+        html2canvas(battlefield).then(canvas => {
+            // 恢复控制面板显示
+            controls.style.display = controlsDisplay;
+            
+            // 恢复旋转控制按钮显示
+            rotationHandles.forEach((handle, index) => {
+                handle.style.display = rotationHandlesDisplays[index];
+            });
+            
+            // 创建下载链接
+            const link = document.createElement('a');
+            link.download = '战术布局_' + new Date().toISOString().replace(/[:.]/g, '-') + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(error => {
+            console.error('截图失败:', error);
+            alert('截图失败，请重试');
+            
+            // 恢复控制面板显示
+            controls.style.display = controlsDisplay;
+            
+            // 恢复旋转控制按钮显示
+            rotationHandles.forEach((handle, index) => {
+                handle.style.display = rotationHandlesDisplays[index];
+            });
+        });
+    }
 });
+
+// 添加html2canvas库
+const script = document.createElement('script');
+script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+document.head.appendChild(script);
