@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>战术布局</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #battlefield {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('assets/background_rmul.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #f0f0f0;
+        }
+        
+        .player {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            cursor: move;
+            user-select: none;
+            transform-origin: center center;
+        }
+        
+        .rotation-handle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid #333;
+            border-radius: 50%;
+            bottom: -10px;
+            right: -10px;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .player-id {
+            position: absolute;
+            top: -20px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px black;
+        }
+        
+        .red-player {
+            background-image: url('assets/player_red.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        .blue-player {
+            background-image: url('assets/player_blue.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        #controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="battlefield"></div>
+    
+    <div id="controls">
+        <button id="add-red">添加红方</button>
+        <button id="add-blue">添加蓝方</button>
+        <button id="reset">重置</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
